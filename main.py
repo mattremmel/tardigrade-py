@@ -1,4 +1,4 @@
-from blupy.btle import Scanner, DefaultDelegate
+from bluepy.btle import Scanner, DefaultDelegate
 
 #
 # Central BLE Device
