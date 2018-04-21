@@ -1,4 +1,8 @@
-from bluepy.btle import Scanner, DefaultDelegate
+from bluepy.btle import Scanner, DefaultDelegate, Peripheral, BTLEException
+
+# UUID
+ServiceUUID =        "4499d2d0-26e8-4678-8b25-8fd84816eb7e"
+CharacteristicUUID = "53dc74ee-accb-4f00-a86e-fdf15c8d2fe4"
 
 #
 # Central BLE Device
@@ -18,10 +22,67 @@ class ScanDelegate(DefaultDelegate):
         - isNewData (i think) is a flag that indicates if the broadcast data for the device is new
         """
         if isNewDevice:
-            print "Discovered device", device.addr
+            # print "Discovered device", device.addr
+
+            # Ignore device if not connectable
+            if not device.connectable:
+                return
+
+            # Create peripheral object for device
+            perif = Peripheral(deviceAddress=device.addr) # TODO: iface=1?
+
+            # print "Connecting to device: %s" % device.addr
+            perif.connect()
+
+            # Discover services
+            # print "Finding service for device: %s" % device.addr
+            services = None
+            try:
+                services = perif.getServicesByUUID(ServiceUUID)
+            except BTLEException:
+                perif.disconnect()
+                # print "Error: Could not find service matching UUID"
+                return
+
+            print "Connected to Tardigrade service on device: %s" % device.addr
+
+            # Discover characteristics on services
+            characteristics = services.getCharacteristic(forUUID=CharacteristicUUID)
+
+            if len(characteristics) != 1:
+                print "Error: %s characteristics returned for UUID" % len(characteristics)
+
+            print "Found DB download characteristic on device: %s" % device.addr
+            characteristic = characteristics[0]
+
+            # Subscribe to characteristic
+            if not characteristic.supportsRead():
+                print "Error: download characteristic doesn't support reading"
+
+            # Wait for start BOM: SOM
+            while characteristic.read() != "SOM":
+                continue
+
+            # Read data
+            data = ""
+            while True:
+                newData = characteristic.read()
+
+                if newData == "EOM":
+                    break
+
+                data = data + newData
+
+            # TODO: Do something with data object
+            print data
+
+            # Close connection
+            perif.disconnect()
+            return
 
         elif isNewData:
-            print "Received new data from", device.addr
+            # print "Received new data from", device.addr
+            pass
 
 
 def scan():
@@ -32,19 +93,14 @@ def scan():
     # Scan process
     scanner = Scanner().withDelegate(ScanDelegate())
 
-    scanner.clear() # Clears the current set of discovered devices
-    scanner.start() # Starts listening for broadcasts
+    scanner.clear()  # Clears the current set of discovered devices
+    scanner.start()  # Starts listening for broadcasts
 
     # Loop and process connections
-    while (True):
+    while True:
         # Waits for broadcasts and calls delegate object when received. Timeout in seconds.
         scanner.process(10)
         scanner.clear()
-
-
-#
-# Peripheral BLE Device
-#
 
 
 def main():
