@@ -35,6 +35,7 @@ class ScanDelegate(DefaultDelegate):
             try:
                 perif.connect(device.addr)
             except BTLEException:
+                print "Error: Exception while connecting"
                 return
 
             # Discover services
