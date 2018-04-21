@@ -42,7 +42,7 @@ class ScanDelegate(DefaultDelegate):
             print "Finding service for device: %s" % device.addr
             services = None
             try:
-                services = perif.getServicesByUUID(ServiceUUID)
+                services = perif.getServiceByUUID(ServiceUUID)
             except BTLEException:
                 perif.disconnect()
                 print "Error: Could not find service matching UUID"
