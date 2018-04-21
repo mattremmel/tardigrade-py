@@ -29,7 +29,7 @@ class ScanDelegate(DefaultDelegate):
                 return
 
             # Create peripheral object for device
-            perif = Peripheral(deviceAddress=device.addr) # TODO: iface=1?
+            perif = Peripheral(device.addr) # TODO: iface=1?
 
             # print "Connecting to device: %s" % device.addr
             perif.connect()
