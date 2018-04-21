@@ -99,6 +99,7 @@ def scan():
     # Loop and process connections
     while True:
         # Waits for broadcasts and calls delegate object when received. Timeout in seconds.
+        print "Scanning for Tardigrade nodes..."
         scanner.process(10)
         scanner.clear()
 
