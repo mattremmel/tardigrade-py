@@ -31,17 +31,20 @@ class ScanDelegate(DefaultDelegate):
             # Create peripheral object for device
             perif = Peripheral(device.addr) # TODO: iface=1?
 
-            # print "Connecting to device: %s" % device.addr
-            perif.connect(device.addr)
+            print "Connecting to device: %s" % device.addr
+            try:
+                perif.connect(device.addr)
+            except BTLEException:
+                return
 
             # Discover services
-            # print "Finding service for device: %s" % device.addr
+            print "Finding service for device: %s" % device.addr
             services = None
             try:
                 services = perif.getServicesByUUID(ServiceUUID)
             except BTLEException:
                 perif.disconnect()
-                # print "Error: Could not find service matching UUID"
+                print "Error: Could not find service matching UUID"
                 return
 
             print "Connected to Tardigrade service on device: %s" % device.addr
