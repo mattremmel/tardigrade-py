@@ -32,7 +32,7 @@ class ScanDelegate(DefaultDelegate):
             perif = Peripheral(device.addr) # TODO: iface=1?
 
             # print "Connecting to device: %s" % device.addr
-            perif.connect()
+            perif.connect(device.addr)
 
             # Discover services
             # print "Finding service for device: %s" % device.addr
