@@ -29,11 +29,11 @@ class ScanDelegate(DefaultDelegate):
                 return
 
             # Create peripheral object for device
-            perif = Peripheral(device.addr) # TODO: iface=1?
+            perif = Peripheral(device.addr, iface=0) # TODO: iface=1?
 
             print "Connecting to device: %s" % device.addr
             try:
-                perif.connect(device.addr)
+                perif.connect(device.addr, iface=0)
             except BTLEException:
                 print "Error: Exception while connecting"
                 return
